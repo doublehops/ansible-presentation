@@ -54,32 +54,3 @@
 .reveal .left-align {
     text-align: left;
 }
-
-                <section>
-                    <h2>Playbook and Output Samples</h2>
-                    <h3 class="left-align">Code example</h3>
-                    <pre class="shell">
-- name: Nginx | Install Nginx
-  apt:
-    pkg=nginx
-    state=latest
-    force=yes
-  become: true
-
-- name: Nginx | Copy host file
-  template: src="templates/nginx.j2"
-            dest=/etc/nginx/sites-available/default.conf
-            mode=0700
-  notify: nginx-restart
-  become: true
-
-                    </pre>
-                    <h3 class="left-align">Output</h3>
-                    <pre class="shell">
-TASK [webserver : Nginx | Install Nginx] ******************************************
-<span class="green">changed: [192.168.30.105]</span>
-
-TASK [webserver : Nginx | Copy host file] ******************************************
-<span class="green">changed: [192.168.30.105]</span>
-                    </pre>
-                </section>
