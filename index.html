@@ -157,10 +157,10 @@ config.vm.provision "ansible" do |ansible|
     apt_repository: repo='deb http://packages.dotdeb.org wheezy all' state=present
   - name: Add dotdeb main src
     apt_repository: repo='deb-src http://packages.dotdeb.org wheezy all' state=present
-  - name: Add dotdeb php7.25
-    apt_repository: repo='deb http://packages.dotdeb.org wheezy-php7.25 all' state=present
-  - name: Add dotdeb php7.25 src
-    apt_repository: repo='deb-src http://packages.dotdeb.org wheezy-php7.25 all' state=present
+  - name: Add dotdeb php7.0
+    apt_repository: repo='deb http://packages.dotdeb.org wheezy-php7.0 all' state=present
+  - name: Add dotdeb php7.0 src
+    apt_repository: repo='deb-src http://packages.dotdeb.org wheezy-php7.0 all' state=present
 
   - name: APT | Install DotDeb key
     apt_key: url='http://www.dotdeb.org/dotdeb.gpg' state=present
@@ -202,7 +202,7 @@ config.vm.provision "ansible" do |ansible|
 
     location ~ \.php$ {
     
-        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         include        fastcgi_params;
     }
@@ -260,13 +260,13 @@ config.vm.provision "ansible" do |ansible|
   - name: PHP | Install PHP7
     apt: pkg={{ item }} state=latest force=yes
     with_items:
-      - php7.2-fpm
-      - php7.2-mysql
-      - php7.2-cli
-      - php7.2-curl
+      - php7.0-fpm
+      - php7.0-mysql
+      - php7.0-cli
+      - php7.0-curl
 
   - name: PHP | Copy PHP config file
-    copy: src="{{ templates_dir }}/php/php.ini" dest=/etc/php7.2/fpm/php.ini owner=root group=root force=yes
+    copy: src="{{ templates_dir }}/php/php.ini" dest=/etc/php7.0/fpm/php.ini owner=root group=root force=yes
     notify: 
     - php-fpm-restart
                     </code></pre>
@@ -277,13 +277,13 @@ config.vm.provision "ansible" do |ansible|
                     <p class="filename">File: provisioners/roles/common/handlers/php.yml</p>
                     <pre><code>---
   - name: php-fpm-start
-    service: name=php7.2-fpm state=started
+    service: name=php7.0-fpm state=started
   
   - name: php-fpm-restart
-    service: name=php7.2-fpm state=restarted
+    service: name=php7.0-fpm state=restarted
   
   - name: php-fpm-stop
-    service: name=php7.2-fpm state=stopped
+    service: name=php7.0-fpm state=stopped
                     </code></pre>
                 </section>
 
