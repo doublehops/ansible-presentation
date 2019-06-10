@@ -44,7 +44,7 @@
 }
 
 .shell .changed {
-    color: orange
+    color: #9C7B00;
 }
 
 .shell .failed {
