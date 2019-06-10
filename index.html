@@ -52,43 +52,33 @@
                 </section>
 
                 <section>
-                    <h2>Advantages of Running VM's<br /> for Development</h2>
+                    <h2>Advantages of Scripted Virtual Machines</h2>
                     <ul>
-                        <li>Scripted environments that can be shared with team with each environment identical</li>
+                        <li>Each team member running identical environments and packages</li>
                         <li>No need to have PHP, Nginx or other packages installed on host machine</li>
                         <li>Each project can have unique environments and package versions</li>
-                        <li>The same scripts can then be used to configure production environments</li>
+                        <li>The same scripts can then be used to configure staging and production environments</li>
                     </ul>
-                </section>
-
-                <section>
-                    <h2>Using Vagrant and Ansible for Configure Environments</h2>
-                    <ul>
-                        <li>Vagrant as the virtual machine handler</li>
-                        <li>Ansible is the configuration tool</li>
-                    </ul>
-                    <p class="margin-top-medium">Together they make small work out of a complex task.</p>
                 </section>
 
                 <section>
                     <h2>What do we Need?</h2>
                     <ul>
-                        <li>Virtual machine package such as Virtualbox or VMware</li>
+                        <li>Virtual machine package such as Virtualbox</li>
                         <li>Vagrant</li>
                         <li>Ansible</li>
                     </ul>
-                    <p class="margin-top-medium">*All software runs on Windows, Mac and popular *nix systems.</p>
                 </section>
 
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
                     <h2>Vagrant</h2>
                     <p>
-                        Vagrant is a lightweight, easy to use Virtualbox wrapper that will create a virtual machine, install an OS and pass control to a provisioner script for configuration.
+                        Vagrant is a lightweight, easy to use Virtualbox wrapper that will create a virtual machine with a clean install of the selected OS.
                     </p>
                 </section>
 
                 <section>
-                    <h2>Configure Vagrant with a Single File</h2>
+                    <h2>Configuring Vagrant with .Vagrantfile</h2>
                     <p class="filename">File: ./Vagrantfile</p>
                     <pre><code>
 config.vm.box = "debian/stretch"
@@ -126,7 +116,7 @@ config.vm.provision "ansible" do |ansible|
                     <ul>
                         <li>Is an alternative to Puppet and Chef</li>
                         <li>Works over SSH so no need for agents on remote hosts</li>
-                        <li>Uses YAML markup for commands</li>
+                        <li>Uses YAML syntax throughout</li>
                         <li>Great documentation</li>
                         <li>Very logical commands and syntax</li>
                     </ul>
@@ -146,25 +136,6 @@ config.vm.provision "ansible" do |ansible|
     - php7
     - database
     - webserver
-                    </code></pre>
-                </section>
-
-                <section>
-                    <h2>Example Task (Add PPAs)</h2>
-                    <p class="filename">File: provisioners/roles/common/tasks/add_ppas.yml</p>
-                    <pre><code>---
-  - name: Add dotdeb main
-    apt_repository: repo='deb http://packages.dotdeb.org wheezy all' state=present
-  - name: Add dotdeb main src
-    apt_repository: repo='deb-src http://packages.dotdeb.org wheezy all' state=present
-  - name: Add dotdeb php7.0
-    apt_repository: repo='deb http://packages.dotdeb.org wheezy-php7.0 all' state=present
-  - name: Add dotdeb php7.0 src
-    apt_repository: repo='deb-src http://packages.dotdeb.org wheezy-php7.0 all' state=present
-
-  - name: APT | Install DotDeb key
-    apt_key: url='http://www.dotdeb.org/dotdeb.gpg' state=present
-    tags: dotdeb
                     </code></pre>
                 </section>
 
@@ -220,6 +191,21 @@ config.vm.provision "ansible" do |ansible|
                 </section>
 
                 <section>
+                    <h2>Example Handler (PHP)</h2>
+                    <p class="filename">File: provisioners/roles/common/handlers/php.yml</p>
+                    <pre><code>---
+  - name: php-start
+    service: name=php7.0-fpm state=started
+  
+  - name: php-restart
+    service: name=php7.0-fpm state=restarted
+  
+  - name: php-stop
+    service: name=php7.0-fpm state=stopped
+                    </code></pre>
+                </section>
+
+                <section>
                     <h2>Example Task (Nginx)</h2>
                     <p class="filename">File: provisioners/roles/webserver/tasks/main.yml</p>
                     <pre><code>---
@@ -254,43 +240,10 @@ config.vm.provision "ansible" do |ansible|
                 </section>
 
                 <section>
-                    <h2>Example Task (PHP)</h2>
-                    <p class="filename">File: provisioners/roles/common/tasks/php.yml</p>
-                    <pre><code>---
-  - name: PHP | Install PHP7
-    apt: pkg={{ item }} state=latest force=yes
-    with_items:
-      - php7.0-fpm
-      - php7.0-mysql
-      - php7.0-cli
-      - php7.0-curl
-
-  - name: PHP | Copy PHP config file
-    copy: src="{{ templates_dir }}/php/php.ini" dest=/etc/php7.0/fpm/php.ini owner=root group=root force=yes
-    notify: 
-    - php-fpm-restart
-                    </code></pre>
-                </section>
-
-                <section>
-                    <h2>Example Handler (PHP)</h2>
-                    <p class="filename">File: provisioners/roles/common/handlers/php.yml</p>
-                    <pre><code>---
-  - name: php-fpm-start
-    service: name=php7.0-fpm state=started
-  
-  - name: php-fpm-restart
-    service: name=php7.0-fpm state=restarted
-  
-  - name: php-fpm-stop
-    service: name=php7.0-fpm state=stopped
-                    </code></pre>
-                </section>
-
-                <section>
                     <h2>Ansible Hosts file</h2>
-                        <p>The `provisioners/ansible_hosts` file contains the list of servers that can be provisioned by Ansible. It is divided into groups to manage them as groups.</p>
-                    <pre class="shell">
+                    <p>The hosts file contains the list of servers that can be provisioned by Ansible. Hosts are divided into groups so they can be targeted separately.</p>
+                    <p class="filename">File: provisioners/roles/common/handlers/php.yml</p>
+                    <pre><code>
 [local_dev]
 192.168.30.105 system_user=vagrant env=local_dev
 
@@ -301,7 +254,7 @@ config.vm.provision "ansible" do |ansible|
 [prod]
 203.184.xxx.xxx system_user=ubuntu env=prod
 203.184.xxx.xxx system_user=ubuntu env=prod
-                    </pre>
+                    </code></pre>
                 </section>
 
                 <section>
@@ -327,13 +280,6 @@ RUNNING HANDLER [php7 : php-restart] *******************************************
 
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
                     <h2>Live Demo</h2>
-                    <ul>
-                        <li>Create fresh working path</li>
-                        <li>Checkout project from Github</li>
-                        <li>Add record to /etc/hosts (192.168.30.105 ansible.pres)</li>
-                        <li>Run `vagrant up`</li>
-                        <li>Point browser to http://192.168.30.105/</li>
-                    </ul>
                 </section>
 
                 <section>
@@ -342,12 +288,11 @@ RUNNING HANDLER [php7 : php-restart] *******************************************
                         <li>Vagrant: <a href="http://vagrantup.com">www.vagrantup.com</a></li>
                         <li>Vagrant boxes: <a href="http://www.vagrantbox.es/">www.vagrantbox.es/</a></li>
                         <li>Ansible: <a href="http://www.ansible.com/home">www.ansible.com</a></li>
-                        <li>Debian webdev Vagrant/Ansible scripts: <a href="https://github.com/doublehops/debian-webdev-environment">github.com/doublehops/debian-webdev-environment</a></li>
                     </ul>
                     <h3 class="margin-top-medium">Presentation Links</h3>
                     <ul>
-                        <li>This Reveal.js presentation: <a href="https://github.com/doublehops/ansible-presentation-provisioner">https://github.com/doublehops/ansible-presentation-provisioner</a></li>
-                        <li>The Ansible script: <a href="https://github.com/doublehops/ansible-presentation">https://github.com/doublehops/ansible-presentation</a></li>
+                        <li>The Ansible script: <a href="https://github.com/doublehops/ansible-presentation-provisioner">https://github.com/doublehops/ansible-presentation-provisioner</a></li>
+                        <li>This presentation: <a href="https://github.com/doublehops/ansible-presentation">https://github.com/doublehops/ansible-presentation</a></li>
                     </ul>
                 </section>
 
