@@ -57,7 +57,7 @@
                         <li>Each team member running identical environments and packages</li>
                         <li>No need to have PHP, Nginx or other packages installed on host machine</li>
                         <li>Each project can have unique environments and package versions</li>
-                        <li>The same scripts can then be used to configure staging and production environments</li>
+                        <li>The same scripts can then be used to configure other hosts such as staging and production</li>
                     </ul>
                 </section>
 
@@ -73,7 +73,7 @@
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
                     <h2>Vagrant</h2>
                     <p>
-                        Vagrant is a lightweight, easy to use Virtualbox wrapper that will create a virtual machine with a clean install of the selected OS.
+                        Vagrant is a lightweight, easy to use Virtualbox wrapper that will create a virtual machine with a clean install of the chosen OS.
                     </p>
                 </section>
 
@@ -94,30 +94,28 @@ config.vm.provision "ansible" do |ansible|
    ansible.inventory_path = "provisioners/ansible_hosts"
                     </code></pre>
                 </section>
-
-                <section>
-                    <h2>Common Vagrant Commands</h2>
+ 
+                <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
+                    <h2>Ansible file types</h2>
+                    <p>Ansible has different file types to divide work up logically</p>
                     <ul>
-                        <li>vagrant init</li>
-                        <li>vagrant up</li>
-                        <li>vagrant provision</li>
-                        <li>vagrant status</li>
-                        <li>vagrant ssh</li>
-                        <li>vagrant reload</li>
-                        <li>vagrant suspend</li>
-                        <li>vagrant halt</li>
-                        <li>vagrant destroy</li>
+                        <li>Initial playbook file</li>
+                        <li>Variables file</li>
+                        <li>Template file</li>
+                        <li>Handler file</li>
+                        <li>Task file</li>
+                        <li>Hosts file</li>
                     </ul>
                 </section>
-
+ 
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
                     <h2>Ansible</h2>
                     <p>Ansible is an automation tool for configuration and deployment.</p>
                     <ul>
                         <li>Is an alternative to Puppet and Chef</li>
-                        <li>Works over SSH so no need for agents on remote hosts</li>
+                        <li>Works over SSH so there is no need for agents on remote hosts</li>
                         <li>Uses YAML syntax throughout</li>
-                        <li>Great documentation</li>
+                        <li>Has great documentation</li>
                         <li>Very logical commands and syntax</li>
                     </ul>
                 </section>
@@ -150,7 +148,7 @@ config.vm.provision "ansible" do |ansible|
                 </section>
 
                 <section>
-                    <h2>Example Nginx Host File</h2>
+                    <h2>Example Template File</h2>
                     <p class="filename">File: provisioners/roles/webservers/templates/local_dev.j2</p>
                     <pre><code>server {
     listen    80;
@@ -215,7 +213,6 @@ config.vm.provision "ansible" do |ansible|
     apt:
       pkg=nginx
       state=latest
-      force=yes
     become: true
   
   - name: Nginx | Ensure Nginx is running
@@ -242,7 +239,7 @@ config.vm.provision "ansible" do |ansible|
                 <section>
                     <h2>Ansible Hosts file</h2>
                     <p>The hosts file contains the list of servers that can be provisioned by Ansible. Hosts are divided into groups so they can be targeted separately.</p>
-                    <p class="filename">File: provisioners/roles/common/handlers/php.yml</p>
+                    <p class="filename">File: provisioners/ansible_hosts</p>
                     <pre><code>
 [local_dev]
 192.168.30.105 system_user=vagrant env=local_dev
@@ -265,7 +262,7 @@ ansible-playbook provisioners/playbook.yml -i "provisioners/ansible_hosts" \
 --private-key .vagrant/machines/default/virtualbox/private_key \
 --limit local_dev
                     </pre>
-                    <h3 class="left-align">Output</h3>
+                    <h3 class="left-align">Example Output</h3>
                     <pre class="shell">
 TASK [webserver : Nginx | Install Nginx] ******************************************
 <span class="ok">OK: [192.168.30.105]</span>
@@ -280,6 +277,12 @@ RUNNING HANDLER [php7 : php-restart] *******************************************
 
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
                     <h2>Live Demo</h2>
+                    <h3 class="left-align">Run the script</h3>
+                    <pre class="shell">
+ansible-playbook provisioners/playbook.yml -i "provisioners/ansible_hosts" \
+--private-key .vagrant/machines/default/virtualbox/private_key \
+--limit local_dev
+                    </pre>
                 </section>
 
                 <section>
