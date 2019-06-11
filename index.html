@@ -96,7 +96,19 @@ config.vm.provision "ansible" do |ansible|
                 </section>
  
                 <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
-                    <h2>Ansible file types</h2>
+                    <h2>Ansible</h2>
+                    <p>Ansible is a provisioning and configuration management tool.</p>
+                    <ul>
+                        <li>Is an alternative to Puppet and Chef</li>
+                        <li>Works over SSH and there is no need for agents on remote hosts</li>
+                        <li>Uses YAML syntax throughout</li>
+                        <li>Has great documentation</li>
+                        <li>Very logical commands and syntax</li>
+                    </ul>
+                </section>
+ 
+                <section>
+                    <h2>Ansible playbook file types</h2>
                     <p>Ansible has different file types to divide work up logically</p>
                     <ul>
                         <li>Initial playbook file</li>
@@ -105,18 +117,6 @@ config.vm.provision "ansible" do |ansible|
                         <li>Handler file</li>
                         <li>Task file</li>
                         <li>Hosts file</li>
-                    </ul>
-                </section>
- 
-                <section data-transition="linear" data-background="#4d7e65" data-background-transition="slide">
-                    <h2>Ansible</h2>
-                    <p>Ansible is an automation tool for configuration and deployment.</p>
-                    <ul>
-                        <li>Is an alternative to Puppet and Chef</li>
-                        <li>Works over SSH so there is no need for agents on remote hosts</li>
-                        <li>Uses YAML syntax throughout</li>
-                        <li>Has great documentation</li>
-                        <li>Very logical commands and syntax</li>
                     </ul>
                 </section>
 
@@ -130,7 +130,6 @@ config.vm.provision "ansible" do |ansible|
 
   roles:
     - common
-    - add_ppas
     - php7
     - database
     - webserver
@@ -143,7 +142,6 @@ config.vm.provision "ansible" do |ansible|
                     <pre><code>---
   hostname: ansible.pres
   docroot: /var/www/web
-  log_file_type: apache2
                     </code></pre>
                 </section>
 
